@@ -12,6 +12,9 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Get submodules
+        run: git submodule update --init
+
       - name: Install stuff
         run: sudo apt-get -y install scons
 
