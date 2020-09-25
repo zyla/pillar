@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+git submodule update --init
+echo '*.o' > .git/modules/deps/gtest/info/exclude
