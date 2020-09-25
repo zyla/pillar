@@ -67,17 +67,26 @@ inline void pprint_write(Writer &w, const std::vector<T> &v) {
   w.write_newline();
   w.indent++;
   for (const auto &x : v) {
+    w.write_indent();
     pprint_write(w, x);
     w.write(",");
     w.write_newline();
   }
   w.indent--;
+  w.write_indent();
   w.write("]");
 }
 
 template <typename T> std::string pprint(const T &v) {
   std::ostringstream out;
   pprint::Writer w{out, false};
+  pprint_write(w, v);
+  return out.str();
+}
+
+template <typename T> std::string pprint_multiline(const T &v) {
+  std::ostringstream out;
+  pprint::Writer w{out, true};
   pprint_write(w, v);
   return out.str();
 }
