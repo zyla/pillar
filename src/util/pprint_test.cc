@@ -34,3 +34,11 @@ TEST(pprint, simple_struct_multiline) {
   ],
 })");
 }
+
+TEST(pprint, variant) {
+  std::variant<int, std::string> v1(42);
+  ASSERT_EQ(pprint::pprint(v1), "42");
+
+  std::variant<int, std::string> v2("foo");
+  ASSERT_EQ(pprint::pprint(v2), R"("foo")");
+}

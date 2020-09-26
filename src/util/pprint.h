@@ -1,7 +1,9 @@
 #pragma once
 
+#include <optional>
 #include <ostream>
 #include <sstream>
+#include <variant>
 #include <vector>
 
 namespace pprint {
@@ -35,7 +37,6 @@ struct Writer {
   }
 
   void open_struct(const std::string &name) {
-    this->write_indent();
     this->out << name << " {";
     this->write_newline();
     this->indent++;
@@ -60,6 +61,9 @@ struct Writer {
 
 template <> void pprint_write(Writer &w, const std::string &v);
 template <> void pprint_write(Writer &w, const int &v);
+template <> inline void pprint_write(Writer &w, const size_t &v) {
+  w.out << v;
+};
 
 template <typename T>
 inline void pprint_write(Writer &w, const std::vector<T> &v) {
@@ -76,6 +80,41 @@ inline void pprint_write(Writer &w, const std::vector<T> &v) {
   w.write_indent();
   w.write("]");
 }
+
+template <typename T>
+inline void pprint_write(Writer &w, const std::variant<T> &v) {
+  pprint_write(w, std::get<T>(v));
+}
+
+struct PrintVisitor {
+  Writer &w;
+
+  template <typename T> void operator()(const T &v) { pprint_write(w, v); }
+};
+
+template <typename... Types>
+inline void pprint_write(Writer &w, const std::variant<Types...> &v) {
+  std::visit(PrintVisitor{w}, v);
+}
+
+template <typename T>
+inline void pprint_write(Writer &w, const std::optional<T> &v) {
+  if (v) {
+    w.write("optional(");
+    pprint_write(w, v.value());
+    w.write(")");
+  } else {
+    w.write("optional()");
+  }
+}
+
+struct raw_string {
+  const char *s;
+
+  raw_string(const char *s) : s(s) {}
+
+  void pprint_write(pprint::Writer &w) const { w.write(this->s); }
+};
 
 template <typename T> std::string pprint(const T &v) {
   std::ostringstream out;
