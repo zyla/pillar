@@ -6,44 +6,58 @@
 
 namespace sql::lexer {
 
-struct Keyword {
-  enum {
-    SELECT,
-    FROM,
-    WHERE,
-  } value;
-
-  void pprint_write(pprint::Writer &w) {
-    switch (this->value) {
-    case Keyword::SELECT:
-      w.write("Keyword::SELECT");
-      break;
-    case Keyword::FROM:
-      w.write("Keyword::FROM");
-      break;
-    case Keyword::WHERE:
-      w.write("Keyword::WHERE");
-      break;
-    }
-  }
+struct unit {
+  void pprint_write(pprint::Writer &w) const { w.write("unit"); }
 };
 
-struct Ident {
-  std::string ident;
+enum TokenType {
+  Select,
+  From,
+  Where,
 
-  void pprint_write(pprint::Writer &w) {
-    w.open_struct("Ident");
-    w.field("ident", this->ident);
+  Identifier,
+};
+
+inline const char *token_type_to_string(TokenType t) {
+  switch (t) {
+  case Select:
+    return "Select";
+  case From:
+    return "From";
+  case Where:
+    return "Where";
+  case Identifier:
+    return "Identifier";
+  }
+}
+
+struct Token {
+  TokenType token_type;
+  std::variant<unit, int, std::string> value;
+
+  void pprint_write(pprint::Writer &w) const {
+    w.open_struct("Token");
+    w.field("token_type",
+            pprint::raw_string(token_type_to_string(this->token_type)));
+    w.field("value", this->value);
     w.close_struct();
   }
 };
-
-using Token = std::variant<Keyword, Ident>;
 
 struct LocatedToken {
   size_t start;
   size_t end;
   Token token;
+
+  void pprint_write(pprint::Writer &w) const {
+    w.open_struct("LocatedToken");
+    w.field("start", this->start);
+    w.field("end", this->end);
+    w.field("token", this->token);
+    w.close_struct();
+  }
 };
+
+std::vector<LocatedToken> lex(const std::string &input);
 
 } // namespace sql::lexer
