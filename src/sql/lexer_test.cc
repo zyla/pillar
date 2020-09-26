@@ -65,3 +65,24 @@ TEST(lexer, keywords) {
   },
 ])");
 }
+
+TEST(lexer, ws_after_identifier) {
+  ASSERT_SNAPSHOT_EQ(unlocate(sql::lexer::lex("foo  ")),
+                     R"([
+  Token {
+    token_type: Identifier,
+    value: "foo",
+  },
+])");
+}
+
+TEST(lexer, comments) {
+  ASSERT_SNAPSHOT_EQ(
+      unlocate(sql::lexer::lex(" -- This is a SQL comment bla bla bla\nfoo  ")),
+      R"([
+  Token {
+    token_type: Identifier,
+    value: "foo",
+  },
+])");
+}
