@@ -1,3 +1,6 @@
+#pragma once
+
+#include "util/pprint.h"
 #include "gtest/gtest.h"
 
 #define ASSERT_SNAPSHOT_EQ(value, output)                                      \

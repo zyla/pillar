@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <optional>
 #include <ostream>
 #include <sstream>
@@ -63,6 +64,11 @@ template <> void pprint_write(Writer &w, const std::string &v);
 template <> void pprint_write(Writer &w, const int &v);
 template <> inline void pprint_write(Writer &w, const size_t &v) {
   w.out << v;
+};
+
+template <typename T>
+inline void pprint_write(Writer &w, const std::unique_ptr<T> &v) {
+  pprint_write(w, *v);
 };
 
 template <typename T>
