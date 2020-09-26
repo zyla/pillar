@@ -1,3 +1,6 @@
 [submodule "deps/gtest"]
 	path = deps/gtest
 	url = https://github.com/google/googletest
+[submodule "deps/scons-compiledb"]
+	path = deps/scons-compiledb
+	url = https://github.com/pinetr2e/scons-compiledb

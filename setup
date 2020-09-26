@@ -2,3 +2,4 @@
 
 git submodule update --init
 echo '*.o' > .git/modules/deps/gtest/info/exclude
+echo '*.pyc' > .git/modules/deps/scons-compiledb/info/exclude
