@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <array>
 #include <iostream>
 #include <optional>
 #include <string>
@@ -23,6 +25,35 @@ struct Lexer {
 
   std::optional<LocatedToken> next();
 };
+
+struct Keyword {
+  std::string str;
+  TokenType token_type;
+};
+
+static const std::array<Keyword, 3> KEYWORDS = {
+    Keyword{"select", Select},
+    Keyword{"from", From},
+    Keyword{"where", Where},
+};
+
+static bool case_insensitive_equals(const std::string &a,
+                                    const std::string &b) {
+  return std::equal(a.begin(), a.end(), b.begin(), b.end(),
+                    [](char x, char y) { return tolower(x) == tolower(y); });
+}
+
+// Returns TokenType for an identifier-like token, which may actually be a
+// keyword.
+static TokenType identifier_type(const std::string &ident) {
+  for (auto &kw : KEYWORDS) {
+    if (case_insensitive_equals(kw.str, ident)) {
+      return kw.token_type;
+    }
+  }
+
+  return Identifier;
+}
 
 std::optional<LocatedToken> Lexer::next() {
   // Skip whitespace
@@ -59,13 +90,14 @@ skipped_ws:
     while (pos < input.size() && is_identifier_char(input[pos])) {
       pos++;
     }
+    std::string value = input.substr(token_start, pos - token_start);
     return std::make_optional(LocatedToken{
         .start = token_start,
         .end = pos,
         .token =
             Token{
-                .token_type = Identifier,
-                .value = input.substr(token_start, pos - token_start),
+                .token_type = identifier_type(value),
+                .value = value,
             },
     });
   }
