@@ -20,6 +20,3 @@ jobs:
 
       - name: Build and test
         run: ./test
-
-      - name: lint
-        run: ./lint
