@@ -26,21 +26,71 @@ struct Parser {
       throw this->parse_error("EOF");
     }
     if (this->tokens[this->pos].token.token_type != type) {
-      throw this->parse_error("Unexpected token");
+      throw this->parse_error("Unexpected token: " +
+                              pprint::pprint(this->tokens[this->pos].token));
     }
     const auto &token = this->tokens[this->pos].token;
     this->pos++;
     return token;
   }
 
+  // Parse a given production.
+  // If it fails at lookahead (i.e. without consuming any input), return None.
+  // If it fails after consuming some input, rethrow the error.
+  template <typename T, typename Parse> std::optional<T> try_parse(Parse p) {
+    size_t start_pos = this->pos;
+    try {
+      return std::optional<T>(p());
+    } catch (ParseError) {
+      if (this->pos == start_pos) {
+        return std::optional<T>();
+      } else {
+        throw;
+      }
+    }
+  }
+
+  // Parse a given production.
+  // If it fails at lookahead (i.e. without consuming any input), return false.
+  // If it fails after consuming some input, rethrow the error.
+  template <typename Parse> bool try_parse_(Parse p) {
+    size_t start_pos = this->pos;
+    try {
+      p();
+      return true;
+    } catch (ParseError) {
+      if (this->pos == start_pos) {
+        return false;
+      } else {
+        throw;
+      }
+    }
+  }
+
+  template <typename T, typename ParseSep, typename ParseT>
+  std::vector<T> sep_by_1(ParseSep parse_sep, ParseT parse_t) {
+    std::vector<T> result;
+    result.push_back(parse_t());
+
+    while (this->try_parse_(parse_sep)) {
+      result.push_back(parse_t());
+    }
+    return result;
+  }
+
+  OutputColumn output_column() {
+    auto expr = this->expr();
+    return OutputColumn{.value = std::move(expr),
+                        .alias = std::optional<std::string>()};
+  }
+
   Select select() {
     this->match(TokenType::Select);
 
     // For now just parse a single column
-    auto expr = this->expr();
-    std::vector<OutputColumn> columns;
-    columns.push_back(OutputColumn{.value = std::move(expr),
-                                   .alias = std::optional<std::string>()});
+    std::vector<OutputColumn> columns = this->sep_by_1<OutputColumn>(
+        [this] { this->match(TokenType::Comma); },
+        [this]() -> OutputColumn { return this->output_column(); });
 
     this->match(TokenType::From);
 

@@ -101,6 +101,18 @@ skipped_ws:
             },
     });
   }
+  switch (input[pos]) {
+  case ',':
+    this->pos++;
+    return std::make_optional(LocatedToken{
+        .start = token_start,
+        .end = pos,
+        .token =
+            Token{
+                .token_type = TokenType::Comma,
+            },
+    });
+  }
 
   // TODO: error handling
   return std::optional<LocatedToken>();

@@ -16,6 +16,7 @@ enum class TokenType {
   Where,
 
   Identifier,
+  Comma,
 };
 
 inline const char *token_type_to_string(TokenType t) {
@@ -28,6 +29,8 @@ inline const char *token_type_to_string(TokenType t) {
     return "Where";
   case TokenType::Identifier:
     return "Identifier";
+  case TokenType::Comma:
+    return "Comma";
   }
 }
 

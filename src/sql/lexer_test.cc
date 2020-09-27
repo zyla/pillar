@@ -86,3 +86,13 @@ TEST(lexer, comments) {
   },
 ])");
 }
+
+TEST(lexer, operators) {
+  ASSERT_SNAPSHOT_EQ(unlocate(sql::lexer::lex(",")),
+                     R"([
+  Token {
+    token_type: Comma,
+    value: unit,
+  },
+])");
+}

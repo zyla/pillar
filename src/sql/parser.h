@@ -10,6 +10,13 @@ namespace sql {
 struct ParseError {
   size_t pos;
   std::string message;
+
+  void pprint_write(pprint::Writer &w) const {
+    w.open_struct("ParseError");
+    w.field("pos", this->pos);
+    w.field("message", this->message);
+    w.close_struct();
+  }
 };
 
 // Throws ParseError
