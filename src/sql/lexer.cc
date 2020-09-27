@@ -32,9 +32,9 @@ struct Keyword {
 };
 
 static const std::array<Keyword, 3> KEYWORDS = {
-    Keyword{"select", Select},
-    Keyword{"from", From},
-    Keyword{"where", Where},
+    Keyword{"select", TokenType::Select},
+    Keyword{"from", TokenType::From},
+    Keyword{"where", TokenType::Where},
 };
 
 static bool case_insensitive_equals(const std::string &a,
@@ -52,7 +52,7 @@ static TokenType identifier_type(const std::string &ident) {
     }
   }
 
-  return Identifier;
+  return TokenType::Identifier;
 }
 
 std::optional<LocatedToken> Lexer::next() {

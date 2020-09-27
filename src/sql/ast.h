@@ -38,7 +38,7 @@ struct ColumnRef {
   }
 };
 
-enum BinaryOp { EQUAL };
+enum class BinaryOp { EQUAL };
 
 struct BinaryExpr {
   std::unique_ptr<Expr> lhs;

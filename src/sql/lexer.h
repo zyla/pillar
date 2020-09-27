@@ -10,7 +10,7 @@ struct unit {
   void pprint_write(pprint::Writer &w) const { w.write("unit"); }
 };
 
-enum TokenType {
+enum class TokenType {
   Select,
   From,
   Where,
@@ -20,13 +20,13 @@ enum TokenType {
 
 inline const char *token_type_to_string(TokenType t) {
   switch (t) {
-  case Select:
+  case TokenType::Select:
     return "Select";
-  case From:
+  case TokenType::From:
     return "From";
-  case Where:
+  case TokenType::Where:
     return "Where";
-  case Identifier:
+  case TokenType::Identifier:
     return "Identifier";
   }
 }

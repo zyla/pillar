@@ -34,7 +34,7 @@ struct Parser {
   }
 
   Select select() {
-    this->match(lexer::Select);
+    this->match(TokenType::Select);
 
     // For now just parse a single column
     auto expr = this->expr();
@@ -42,7 +42,7 @@ struct Parser {
     columns.push_back(OutputColumn{.value = std::move(expr),
                                    .alias = std::optional<std::string>()});
 
-    this->match(lexer::From);
+    this->match(TokenType::From);
 
     // For now just parse a single table
     auto table_name = this->identifier();
@@ -60,7 +60,7 @@ struct Parser {
   }
 
   std::string identifier() {
-    auto token = this->match(lexer::Identifier);
+    auto token = this->match(TokenType::Identifier);
     return std::get<std::string>(token.value);
   }
 
