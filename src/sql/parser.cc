@@ -87,7 +87,6 @@ struct Parser {
   Select select() {
     this->match(TokenType::Select);
 
-    // For now just parse a single column
     std::vector<OutputColumn> columns = this->sep_by_1<OutputColumn>(
         [this] { this->match(TokenType::Comma); },
         [this]() -> OutputColumn { return this->output_column(); });
